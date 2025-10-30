@@ -16,6 +16,7 @@ spec:
       containers:
         - name: apisix
           image: apache/apisix:3.13.0-debian
+          imagePullPolicy: IfNotPresent
           env:
             - name: APISIX_STAND_ALONE
               value: "false"
@@ -23,6 +24,27 @@ spec:
             - containerPort: 9080
             - containerPort: 9180
             - containerPort: 9443
+          # Fixed health probes - use TCP socket check
+          livenessProbe:
+            tcpSocket:
+              port: 9080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: 9080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+          # Add resource limits
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"  # Fixed: was 512Gi (typo)
+              cpu: "300m"
           volumeMounts:
             - name: apisix-config
               mountPath: /usr/local/apisix/conf/config.yaml

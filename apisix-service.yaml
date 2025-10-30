@@ -16,4 +16,4 @@ spec:
     - name: https
       port: 9443
       targetPort: 9443
-  type: NodePort  # Use LoadBalancer if on cloud
+  type: LoadBalancer  # Use LoadBalancer if on cloud
